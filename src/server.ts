@@ -1,17 +1,20 @@
 import express from "express";
-import cookieParser from "cookie-parser";
-import session, { SessionOptions } from "express-session";
-import { authRouter } from "./routers/authRouter";
-import { __config } from "./core/configs";
-import { IServerConfig } from "./core/interfaces";
-import { __postgres } from "./core/postgre";
-import { __redis } from "./core/redis";
+import cors from "cors";
+import { __config } from "@core/configs";
+import { authRouter } from "@routers/authRouter";
+import { __redis } from "@memory/redis";
+import { __postgres, User } from "@memory/postgre";
+import { IServerConfig } from "@core/interfaces";
 
 const app = express();
+
 const { port } = __config("server") as IServerConfig;
 
-app.use(cookieParser());
-app.use(session(__config("session") as SessionOptions))
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({
+    extended: true
+}))
 
 app.use("/", authRouter);
 
@@ -24,6 +27,4 @@ __redis.Create().set("FOO", "BAR", "EX", 60)
     .then(data => console.log(`Connected to redis FOO-${data}`))
     .catch(e => console.error(e));
 
-__postgres.Create().Connect()
-    .then(() => console.log("Connected to postgres"))
-    .catch(e => console.error(e));
+__postgres.syncDb().then(() => console.log("synced db")).catch(e => console.error(e));

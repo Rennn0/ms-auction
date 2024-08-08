@@ -1,7 +1,8 @@
 import EventEmitter from "node:events";
 import Redis, { RedisOptions } from "ioredis"
-import { CACHE_EVENTS } from "./events_enum";
-import { __config } from "./configs";
+import { __config } from "@core/configs";
+import { CACHE_EVENTS } from "@core/events_enum";
+
 
 export class __redis extends EventEmitter {
     private static _instance: __redis;
